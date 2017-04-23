@@ -1,0 +1,14 @@
+Package: org.thebigboss.libstatus9
+Name: libstatus9
+Provides: libstatusbar (=0.9.9.0) ,libmoorecon (=0.9.9.0)
+Replaces: libstatusbar ,libmoorecon
+Conflicts: libstatusbar,libmoorecon
+Depends: firmware (>=9.1), mobilesubstrate, com.rpetrich.rocketbootstrap
+Version: 1:0.0.1.2-0
+Architecture: iphoneos-arm
+Description: Based almost 100% on libstatusbar by phoenix3200. This version replaces libstatusbar. Compiled for armv7 and arm64. Testet on Devices with iOS 7.1.2 to 10.2
+Author: Rene Kahle <packetfahrer@web.de>
+Maintainer: BigBoss <bigboss@thebigboss.org>
+Section: Development
+dev: Rene Kahle <packetfahrer@web.de>
+Tag: purpose::extension, role::developer, compatible::ios9, compatible::ios10
