@@ -915,7 +915,49 @@ __attribute__((constructor)) void start()
 		// get classes
 		Classes_Fetch();
 		
+		
 		[[NSAutoreleasePool alloc] init];
+
+		
+		BOOL shouldLoad = NO;
+		
+		NSArray *args = [[NSClassFromString(@"NSProcessInfo") processInfo] arguments];
+		NSUInteger count = args.count;
+		if (count != 0) {
+			NSString *executablePath = args[0];
+			if (executablePath) {
+				
+				NSString *processName = [executablePath lastPathComponent];
+				
+				BOOL isSpringBoard = [processName isEqualToString:@"SpringBoard"];
+				
+				BOOL isApplication = [executablePath rangeOfString:@"/Application/"].location != NSNotFound || [executablePath rangeOfString:@"/Applications/"].location != NSNotFound;
+				
+				BOOL isFileProvider = [[processName lowercaseString] rangeOfString:@"fileprovider"].location != NSNotFound;
+				
+				BOOL skip = [processName isEqualToString:@"AdSheet"]
+						 || [processName isEqualToString:@"CoreAuthUI"]
+						 || [processName isEqualToString:@"InCallService"]
+						 || [processName isEqualToString:@"MessagesNotificationViewService"]
+						 || [executablePath rangeOfString:@".appex/"].location != NSNotFound;
+				if (!isFileProvider && (isSpringBoard || isApplication) && !skip) {
+					shouldLoad = YES; //%init;
+
+					HBLogDebug(@"LIBSTATUSBAR  loading %@ -- %@", processName, executablePath);
+				}
+				 else {
+
+					HBLogDebug(@"LIBSTATUSBAR NOT loading %@ -- %@", processName, executablePath);
+				 }
+			}
+		}
+
+		// we only hook UIKit apps - used as a guard band
+		if (!shouldLoad) {
+			
+			return;
+		
+		}
 		
 		// we only hook UIKit apps - used as a guard band
 		if($UIStatusBarItem)
@@ -1002,6 +1044,7 @@ __attribute__((constructor)) void start()
 		else if(!$UIApplication)
 		{
 			CommonLog_F("Libstatusbar NOT loading on a UIKit process.");
+			HBLogDebug(@"Libstatusbar NOT loading on a UIKit process.");
 		}
 		else
 		{
@@ -1009,6 +1052,7 @@ __attribute__((constructor)) void start()
 		}
 	}
 	CommonLog("Took %ld us to load libstatusbar\n", load_time);
+	HBLogDebug(@"Took %ld us to load libstatusbar\n", load_time);
 
 }
 
